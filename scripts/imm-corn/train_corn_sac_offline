@@ -1,0 +1,43 @@
+#!/usr/bin/env python3
+
+from typing import Optional, Iterable, Dict
+from dataclasses import replace
+from gym import spaces
+from pathlib import Path
+from tqdm.auto import tqdm
+from icecream import ic
+import pickle
+import numpy as np
+import torch as th
+import d3rlpy
+
+
+def get_dataset(data_path: str):
+    out = dict()
+    for pkl in tqdm(Path(data_path).glob('*.pkl')):
+        with open(pkl, 'rb') as fp:
+            episode = pickle.load(fp)
+            for k, v in episode.items():
+                if k not in out:
+                    out[k] = v
+                    continue
+                out[k] = np.concatenate([out[k], v], axis=0)
+    dataset = d3rlpy.dataset.MDPDataset(
+        out['obsn'],
+        out['actn'],
+        out['rewd'],
+        out['term'],
+        out['tout']
+    )
+    return dataset
+
+
+def main():
+    data_path:str='/tmp/corn-data/'
+    sac = d3rlpy.algos.SACConfig().create(device="cuda:0")
+    dataset = get_dataset(data_path)
+    sac.fit(dataset, n_steps=1_000_000)
+
+
+if __name__ == '__main__':
+    main()
