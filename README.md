@@ -9,6 +9,13 @@
 3. PorelDICE (Kim et al., "Relaxed Stationary Distribution Correction Estimation for Improved Offline Policy Optimization" AAAI 2024. [link](https://ojs.aaai.org/index.php/AAAI/article/view/29218/30298))
 
 ## Instructions
+Install this package by
+```
+git clone git@github.com:KAIST-AILab/d3rlpy-everyday-objects.git
+cd d3rlpy-everyday-objects
+pip install -e .
+```
+
 ### Training SAC with CORN Representation
 1. Clone `corn@iitp-d3rlpy` ([link](https://github.com/iMSquared/corn/tree/iitp-d3rlpy)) as in:
 ```

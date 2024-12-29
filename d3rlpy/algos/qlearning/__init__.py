@@ -17,3 +17,5 @@ from .rebrac import *
 from .sac import *
 from .td3 import *
 from .td3_plus_bc import *
+from .drildice import *
+from .porel import *
