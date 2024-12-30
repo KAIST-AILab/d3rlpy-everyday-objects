@@ -17,7 +17,7 @@ pip install -e .
 ```
 
 ### Training SAC with CORN Representation
-1. Clone `corn@iitp-d3rlpy` ([link](https://github.com/iMSquared/corn/tree/iitp-d3rlpy)) as in
+1. Clone `corn@iitp-d3rlpy` ([link](https://github.com/iMSquared/corn/tree/iitp-d3rlpy)) as in:
 ```
 git clone --branch iitp-d3rlpy https://github.com/iMSquared/corn.git
 ```
