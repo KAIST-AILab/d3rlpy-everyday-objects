@@ -8,7 +8,6 @@ from ...models.builders import (
 )
 from ...models.encoders import EncoderFactory, make_encoder_field
 from ...models.optimizers import OptimizerFactory, make_optimizer_field
-from ...models.q_functions import QFunctionFactory, make_q_func_field
 from ...types import Shape
 from .base import QLearningAlgoBase
 from .torch.drildice_impl import DrilDICEImpl, DrilDICEModules
@@ -101,14 +100,11 @@ class DrilDICEConfig(LearnableConfig):
     nu_optim_factory: OptimizerFactory = make_optimizer_field()
     actor_encoder_factory: EncoderFactory = make_encoder_field()
     nu_encoder_factory: EncoderFactory = make_encoder_field()
-    # nu_func_factory: QFunctionFactory = make_q_func_field()
 
     batch_size: int = 100
     gamma: float = 0.99
     f_divergence_type: str = "SoftTV"
     alpha: float = 1.0
-    max_weight: float = 20.0
-    n_nus: int = 1
     
     def create(
         self, device: DeviceArg = False, enable_ddp: bool = False
@@ -131,16 +127,6 @@ class DrilDICE(QLearningAlgoBase[DrilDICEImpl, DrilDICEConfig]):
             device=self._device,
             enable_ddp=self._enable_ddp,
         )
-        
-        # nu_funcs, nu_func_forwarder = create_continuous_q_function(
-        #     observation_shape,
-        #     action_size,
-        #     self._config.nu_encoder_factory,
-        #     self._config.nu_func_factory,
-        #     n_ensembles=1,
-        #     device=self._device,
-        #     enable_ddp=self._enable_ddp,
-        # )
         nu_func = create_value_function(
             observation_shape,
             self._config.nu_encoder_factory,
@@ -169,7 +155,6 @@ class DrilDICE(QLearningAlgoBase[DrilDICEImpl, DrilDICEConfig]):
             gamma=self._config.gamma,
             alpha=self._config.alpha,
             f_divergence_type=self._config.f_divergence_type,
-            max_weight=self._config.max_weight,
             device=self._device,
         )
 

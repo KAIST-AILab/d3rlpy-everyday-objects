@@ -1,6 +1,5 @@
 import dataclasses
-from abc import ABCMeta, abstractmethod
-from typing import Dict, Union
+from typing import Dict
 
 import torch
 from torch.optim import Optimizer
@@ -9,13 +8,10 @@ from ....dataclass_utils import asdict_as_float
 from ....models.torch import (
     NormalPolicy,
     Policy,
-    ValueFunction,
-    ContinuousQFunction,
-    ContinuousEnsembleQFunctionForwarder,
+    ValueFunction
 )
-from ....torch_utility import Modules, TorchMiniBatch, train_api
+from ....torch_utility import TorchMiniBatch, train_api
 from ....types import Shape, TorchObservation
-from ..base import QLearningAlgoImplBase
 from .bc_impl import BCBaseModules, BCBaseImpl
 import torch.nn.functional as F
 
@@ -41,8 +37,6 @@ class DrilDICEImpl(BCBaseImpl):
     _alpha: float
     _gamma: float
     _f_divergence_type: str
-    _max_weight: float
-    _nu_func_forwarder: ContinuousEnsembleQFunctionForwarder
 
     def __init__(
         self,
@@ -52,7 +46,6 @@ class DrilDICEImpl(BCBaseImpl):
         gamma: float,
         alpha: float,
         f_divergence_type: str,
-        max_weight: float,
         device: str,
     ):
         super().__init__(
@@ -65,8 +58,6 @@ class DrilDICEImpl(BCBaseImpl):
         self._alpha = alpha
         self._gamma = gamma
         self._f_divergence_type = f_divergence_type
-        self._max_weight = max_weight
-        # self._policy_type = policy_type
 
         # soft TV-distance
         EPS = 1e-8
@@ -74,7 +65,6 @@ class DrilDICEImpl(BCBaseImpl):
             lambda x: 0.5 * torch.log( 0.5 * (torch.exp(x-1) + torch.exp(1-x)) + EPS)
         self.w_fn =  \
             lambda x: F.relu(0.5 * (torch.log( 1 + 2 * torch.clip(x, -0.5, 0.5) + EPS) - torch.log (1 - 2 * torch.clip(x, -0.5, 0.5) + EPS))  + 1)
-            # lambda x: torch.exp(torch.min(x, 0)) if x < 0 else x + 1
         self.f_w_fn = \
             lambda x: self.f_fn(self.w_fn(x))
 
@@ -136,7 +126,7 @@ class DrilDICEImpl(BCBaseImpl):
         w_e = self.w_fn (e_target / self._alpha)
         
         wbc_loss = (w_e.detach() * C_pi_s).mean()
-        # bc_loss = F.mse_loss(self._modules.imitator(obs_t).squashed_mu, act_t)
+        
         return ImitatorLoss(imitator_loss=wbc_loss)
     
     def compute_nu_loss(
@@ -159,7 +149,6 @@ class DrilDICEImpl(BCBaseImpl):
 
         nu_loss = nu_loss0 + nu_loss1 + nu_loss2
         
-        # nu_loss = F.mse_loss(self._modules.imitator(obs_t).squashed_mu, act_t)
         return NuLoss(nu_loss=nu_loss)
 
     @property
