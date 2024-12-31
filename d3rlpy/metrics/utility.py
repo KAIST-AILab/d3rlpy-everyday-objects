@@ -42,7 +42,8 @@ def evaluate_qlearning_with_environment(
     """
     episode_rewards = []
     for _ in range(n_trials):
-        observation, _ = env.reset()
+        # observation, _ = env.reset()
+        observation = env.reset()
         episode_reward = 0.0
 
         while True:
@@ -62,8 +63,11 @@ def evaluate_qlearning_with_environment(
                     )
                 action = algo.predict(observation)[0]
 
-            observation, reward, done, truncated, _ = env.step(action)
+            # observation, reward, done, truncated, _ = env.step(action)
+            observation, reward, done, _ = env.step(action)
+
             episode_reward += float(reward)
+            truncated = False
 
             if done or truncated:
                 break

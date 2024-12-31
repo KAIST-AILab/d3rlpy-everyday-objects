@@ -7,7 +7,7 @@ def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--dataset", type=str, default="hopper-expert-v2")
     parser.add_argument("--seed", type=int, default=1)
-    parser.add_argument("--gpu", type=int)
+    parser.add_argument("--gpu", type=int, default=1)
     args = parser.parse_args()
 
     dataset, env = d3rlpy.datasets.get_dataset(args.dataset)
@@ -17,10 +17,10 @@ def main() -> None:
     d3rlpy.envs.seed_env(env, args.seed)
 
     drildice = d3rlpy.algos.DrilDICEConfig(
-        actor_learning_rate=3e-4,
-        nu_learning_rate=3e-4,
+        actor_learning_rate=3e-5,
+        nu_learning_rate=3e-5,
         f_divergence_type="SoftTV",
-        batch_size=256,
+        batch_size=512,
         gamma=0.99,
         alpha=0.01,
     ).create(device=args.gpu)
