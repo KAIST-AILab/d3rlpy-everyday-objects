@@ -153,8 +153,8 @@ class DrilDICEImpl(BCBaseImpl):
         f_w_nu = self.f_w_fn(e_target / self._alpha)
         w_nu = self.w_fn(e_target / self._alpha)
         
-        nu_loss0 = (1-self._gamma) * nu_s0.mean()
-        nu_loss1 = -self._alpha * f_w_nu.mean()
+        nu_loss0 = (1 - self._gamma) * nu_s0.mean()
+        nu_loss1 = - self._alpha * f_w_nu.mean()
         nu_loss2 = (w_nu * e_target).mean()
 
         nu_loss = nu_loss0 + nu_loss1 + nu_loss2
